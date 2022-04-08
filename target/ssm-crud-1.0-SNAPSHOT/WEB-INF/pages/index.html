@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>首页</title>
+  <script type="text/javascript" src="http://localhost:8080/crud/static/script/vue2.js"></script>
+  <script type="text/javascript" src="http://localhost:8080/crud//static/script/axios.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <!-- 引入组件库 -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <style>
+    #emp-info-box{
+      width: 75%;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="container" style="text-align: center">
+    <!-- Form -->
+    <el-dialog title="添加员工信息" :visible.sync="dialogFormVisible">
+      <el-form>
+        <el-form-item label="员工姓名">
+          <el-input v-model="form.empName"></el-input>
+        </el-form-item>
+        <el-form-item label="员工性别">
+          <el-radio-group v-model="form.gender">
+            <el-radio label="男"></el-radio>
+            <el-radio label="女"></el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="电子邮箱">
+          <el-input v-model="form.email"></el-input>
+        </el-form-item>
+        <el-form-item label="所属部门">
+          <el-select v-model="form.departmentName" placeholder="请选择部门">
+            <el-option label="技术部" value="1"></el-option>
+            <el-option label="测试部" value="2"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="onSubmit">确 定</el-button>
+      </div>
+    </el-dialog>
+    <h1>员工信息管理</h1>
+    <div id="emp-info-box">
+      <el-button type="text" @click="dialogFormVisible = true"><i class="el-icon-circle-plus-outline"></i>添加</el-button>
+      <template>
+        <el-table
+                :data="employeeList"
+                style="width: 100%" class="emp-table">
+          <el-table-column
+                  label="编号"
+                  width="180">
+            <template slot-scope="scope">
+              <span style="margin-left: 10px">{{ scope.row.empId }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column
+                  label="姓名"
+                  width="180">
+            <template slot-scope="scope">
+              <div slot="reference" class="name-wrapper">
+                <el-tag size="medium">{{ scope.row.empName }}</el-tag>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column
+                  label="性别"
+                  width="180">
+            <template slot-scope="scope">
+              <div slot="reference" class="name-wrapper">
+                <el-tag size="medium">{{ scope.row.gender }}</el-tag>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column
+                  label="电子邮箱"
+                  width="180">
+            <template slot-scope="scope">
+              <div slot="reference" class="name-wrapper">
+                <el-tag size="medium">{{ scope.row.email }}</el-tag>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column
+                  label="所在部门"
+                  width="180">
+            <template slot-scope="scope">
+              <div slot="reference" class="name-wrapper">
+                <el-tag size="medium">{{ scope.row.department.deptName }}</el-tag>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作">
+            <template slot-scope="scope">
+              <el-button
+                      size="mini"
+                      @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+              <el-button
+                      size="mini"
+                      type="danger"
+                      @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </template>
+    </div>
+    <el-pagination
+            background
+            layout="prev, pager, next"
+            :total="pageInfo.total"
+            :page-size="pageInfo.pageSize"
+            @current-change="changeHandler">
+    </el-pagination>
+  </div>
+  <script type="text/javascript">
+    var vue = new Vue({
+      el:"#container",
+      data:{
+        employeeList:[],
+        pageInfo:null,
+        dialogFormVisible: false,
+        form: {
+          empName: '',
+          gender:'',
+          email:'',
+          departmentName: '请选择部门',
+        }
+      },
+      methods:{
+        getEmployeeList:function (pn){
+          console.log(12322)
+          axios({
+            url:'http://localhost:8080/crud/emp',
+            params: {
+              pn
+            },
+            method:'GET',
+          }).then(function (res) {
+            vue.$data.employeeList = res.data.data.pageInfo.list
+            vue.$data.pageInfo = res.data.data.pageInfo
+          })
+        },
+        changeHandler:function (pn) {
+          this.getEmployeeList(pn)
+        },
+        onSubmit:function () {
+          // console.log(vue.$data.form)
+          vue.$data.dialogFormVisible = false
+          axios({
+            url:'http://localhost:8080/crud/emp',
+            method:"POST",
+            params: {
+              empName:vue.$data.form.empName,
+              gender: vue.$data.form.gender,
+              email: vue.$data.form.email,
+              dId:1
+            },
+          }).then(function (res) {
+            if (res.data.state === 200){
+              alert("添加成功！")
+              location.href = 'http://localhost:8080/crud/emp?pn='+9999
+            }
+          })
+        }
+      },
+      mounted:function () {
+        this.getEmployeeList()
+      }
+    })
+  </script>
+</body>
+</html>
