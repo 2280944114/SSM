@@ -14,24 +14,24 @@
                         userId="root"
                         password="07032539">
         </jdbcConnection>
-
+<!--数据类型解析-->
         <javaTypeResolver >
             <property name="forceBigDecimals" value="false" />
         </javaTypeResolver>
-
+<!--        javaBean的生成策略-->
         <javaModelGenerator targetPackage="com.xdy.ssm.crud.bean" targetProject=".\src\main\java">
             <property name="enableSubPackages" value="true" />
             <property name="trimStrings" value="true" />
         </javaModelGenerator>
-
+<!--sql映射文件的生成策略-->
         <sqlMapGenerator targetPackage="com.xdy.ssm.crud.dao"  targetProject=".\src\main\resources">
             <property name="enableSubPackages" value="true" />
         </sqlMapGenerator>
-
+<!--mapper接口的生成策略-->
         <javaClientGenerator type="XMLMAPPER" targetPackage="com.xdy.ssm.crud.dao"  targetProject=".\src\main\java">
             <property name="enableSubPackages" value="true" />
         </javaClientGenerator>
-
+<!--逆向分析的表-->
         <table tableName="tbl_emp" domainObjectName="Employee"/>
         <table tableName="tbl_dept" domainObjectName="Department"/>
 
